@@ -31,8 +31,11 @@ var opts = {
       name: 'Conversions from any page'
       // Only in the last 24 hours
     , range: {
+        // these are required
         start: Date.now() - 24 * 60 * 60 * 1000
       , end: Date.now()
+        // optional
+      , step: 60 * 60 * 1000
       }
     }
   ]

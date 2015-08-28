@@ -16,6 +16,7 @@ optSchema = Joi.object().keys({
       range: Joi.object().keys({
           start: Joi.number()
         , end: Joi.number()
+        , step: Joi.number()
         })
     , name: Joi.string().min(1)
     }).requiredKeys(['range', 'range.start', 'range.end', 'name'])
