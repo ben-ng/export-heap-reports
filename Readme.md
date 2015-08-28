@@ -3,8 +3,9 @@
 Stupid easy heap report exports
 
 ```js
-get({
+var exportReports = require('export-heap-reports')
 
+exportReports({
   username: 'jenny@website.com'
 , password: 'jenny'
 
@@ -34,7 +35,7 @@ get({
 }
 ```
 
-# License
+## License
 
 The MIT License (MIT)
 
