@@ -1,0 +1,37 @@
+{
+  "name": "export-heap-reports",
+  "version": "1.0.0",
+  "description": "Stupid easy heap report exports",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test",
+    "tdd": "nodemon test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ben-ng/export-heap-reports.git"
+  },
+  "keywords": [
+    "heap",
+    "analytics",
+    "json"
+  ],
+  "author": "Ben Ng <me@benng.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ben-ng/export-heap-reports/issues"
+  },
+  "homepage": "https://github.com/ben-ng/export-heap-reports#readme",
+  "dependencies": {
+    "async": "^1.4.2",
+    "cheerio": "^0.19.0",
+    "csv-parse": "^1.0.0",
+    "joi": "^6.6.1",
+    "lodash": "^3.10.1",
+    "request": "^2.61.0",
+    "tape": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.4.1"
+  }
+}
