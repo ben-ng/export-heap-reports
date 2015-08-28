@@ -135,9 +135,9 @@ function getQueries (opts, csrf, next) {
                     .map(function (report) {
                       query = _.cloneDeep(report.query)
 
-                      // Build form obj
                       query.main.format = 'csv'
 
+                      // Thanks https://github.com/alexose/heapscrape for this hint
                       // HACK: Override stop date because heap provides the wrong one
                       if (query.over) {
                         query.over.stop = +new Date()
