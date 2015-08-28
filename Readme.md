@@ -21,6 +21,24 @@ exportReports({
 })
 ```
 
+You can specify a range option for each report if you don't want to override the one defined in the report:
+
+```js
+var opts = {
+  // other options omitted.. see above
+  reports: [
+    {
+      name: 'Conversions from any page'
+      // Only in the last 24 hours
+    , range: {
+        start: Date.now() - 24 * 60 * 60 * 1000
+      , end: Date.now()
+      }
+    }
+  ]
+}
+```
+
 `reports` is a map from report names to a JS representation of the exported CSV for that report. This means that you'll get an array of objects for each report that looks like this:
 
 ```json

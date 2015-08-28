@@ -10,7 +10,16 @@ optSchema = Joi.object().keys({
   username: Joi.string().min(1).required()
 , password: Joi.string().min(1).required()
 , environment: Joi.number().required()
-, reports: Joi.array().items(Joi.string().min(1)).required()
+, reports: Joi.array().items(Joi.alternatives().try([
+    Joi.string().min(1)
+  , Joi.object().keys({
+      range: Joi.object().keys({
+          start: Joi.number()
+        , end: Joi.number()
+        })
+    , name: Joi.string().min(1)
+    }).requiredKeys(['range', 'range.start', 'range.end', 'name'])
+  ])).required()
 })
 .requiredKeys([
   'username'
@@ -128,33 +137,57 @@ function getQueries (opts, csrf, next) {
     try {
       body = JSON.parse(body)
 
-      var reports = _(body)
-                    .filter(function (report) {
-                      return opts.reports.indexOf(report.name) > -1
-                    })
-                    .map(function (report) {
-                      query = _.cloneDeep(report.query)
+      var reportNames = _(opts.reports).map(function (r) {
+            return typeof r === 'string' ? r : r.name
+          }).value()
+        , reports = _(body)
+          .filter(function (report) {
+            return reportNames.indexOf(report.name) > -1
+          })
+          .map(function (report) {
+            // Either use provided options, or use defaults in the query
+            var reportOpts = _.find(opts.reports, function (r) {
+              return typeof r === 'object'
+            })
 
-                      query.main.format = 'csv'
+            if (!reportOpts) {
+              reportOpts = {
+                name: report.name
+              , range: report.query.over || {}
+              }
+            }
+            else {
+              // Hahahahhahaha... sigh. who uses a negative start anyway?
+              _.assign(reportOpts, {
+                range: {
+                  start: reportOpts.range.start - reportOpts.range.end
+                , stop: reportOpts.range.end
+                }
+              })
+            }
 
-                      // Thanks https://github.com/alexose/heapscrape for this hint
-                      // HACK: Override stop date because heap provides the wrong one
-                      if (query.over) {
-                        query.over.stop = +new Date()
-                      }
+            query = _.merge({}, report.query, {
+              main: {
+                format: 'csv'
+              }
+            , over: reportOpts.range
+            })
 
-                      return {
-                        name: report.name
-                      , query: query
-                      }
-                    })
-                    .value()
+            // Thanks https://github.com/alexose/heapscrape for this hint
+            // HACK: Override stop date because heap provides the wrong one
+
+            return {
+              name: report.name
+            , query: query
+            }
+          })
+          .value()
 
       if (reports.length !== opts.reports.length) {
         var envReports = _.pluck(body, 'name')
 
         throw new Error('Could not find these reports:\n' +
-          _.difference(opts.reports, envReports).join(', ') + '\n' +
+          _.difference(reportNames, envReports).join(', ') + '\n' +
           'In the environment\'s reports:\n' +
           envReports.join(', ') + '\n' +
           'Did you choose the right environment?')
